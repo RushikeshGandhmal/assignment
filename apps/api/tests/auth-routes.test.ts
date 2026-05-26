@@ -34,6 +34,26 @@ describe('POST /auth/login', () => {
     expect(authCookie).toMatch(/SameSite/i);
   });
 
+  it('uses SameSite=None + Secure in production for cross-site cookies', async () => {
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    try {
+      const { app } = await buildAppWithUser();
+      const res = await request(app)
+        .post('/auth/login')
+        .send({ email: 'hr@example.com', password: 's3cret-pass' });
+
+      const setCookie = res.headers['set-cookie'] as unknown;
+      const cookies = Array.isArray(setCookie) ? setCookie : [String(setCookie)];
+      const authCookie = cookies.find((c) => c.startsWith('auth='));
+      expect(authCookie).toBeDefined();
+      expect(authCookie).toMatch(/SameSite=None/i);
+      expect(authCookie).toMatch(/Secure/i);
+    } finally {
+      process.env.NODE_ENV = originalEnv;
+    }
+  });
+
   it('returns 401 for a wrong password', async () => {
     const { app } = await buildAppWithUser();
     const res = await request(app)
