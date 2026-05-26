@@ -247,8 +247,9 @@ NODE_ENV=development
 ```
 
 The UI doesn't need a `.env.local` for dev — the default API URL is
-`http://localhost:4000`. Add one only if your API runs on a different
-port:
+`http://localhost:4000` (see `apps/web/.env.example` for the full
+list of supported web env vars). Add one only if your API runs on a
+different port:
 
 ```bash
 # apps/web/.env.local
