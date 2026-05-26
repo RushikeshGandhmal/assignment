@@ -55,6 +55,11 @@ export class EmployeeService {
     return inserted as Employee;
   }
 
+  getEmployeeById(id: string): Employee | null {
+    const row = this.db.select().from(employees).where(eq(employees.id, id)).get();
+    return (row as Employee | undefined) ?? null;
+  }
+
   listEmployees(query: ListEmployeesQuery): PaginatedEmployees {
     const { page, pageSize } = query;
     const where = buildListWhereClause(query);

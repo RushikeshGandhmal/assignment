@@ -20,6 +20,15 @@ export function createEmployeesRouter(deps: { db: DbConnection; jwtSecret: strin
     res.json(result);
   });
 
+  router.get('/:id', (req, res) => {
+    const employee = service.getEmployeeById(req.params.id);
+    if (!employee) {
+      res.status(404).json({ error: 'not_found' });
+      return;
+    }
+    res.json(employee);
+  });
+
   router.post('/', (req, res) => {
     const parsed = createEmployeeSchema.safeParse(req.body);
     if (!parsed.success) {
