@@ -7,7 +7,11 @@ import { env } from './env.js';
 // rather than on the first user request.
 db.all(sql`select 1`);
 
-const app = createApp({ db, jwtSecret: env.JWT_SECRET });
+const app = createApp({
+  db,
+  jwtSecret: env.JWT_SECRET,
+  corsOrigin: env.CORS_ORIGIN,
+});
 
 app.listen(env.PORT, () => {
   // eslint-disable-next-line no-console
