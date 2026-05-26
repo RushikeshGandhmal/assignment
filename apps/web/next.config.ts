@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ['@salary-management/shared'],
 };
 
 export default nextConfig;

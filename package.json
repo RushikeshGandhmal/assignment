@@ -14,7 +14,8 @@
     "build": "pnpm -r --if-present run build",
     "dev": "pnpm -r --parallel --if-present run dev",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
+    "postinstall": "pnpm --filter @salary-management/shared build"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
