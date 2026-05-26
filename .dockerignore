@@ -1,0 +1,39 @@
+# Docker build context excludes. The Docker build context is the repo root
+# (render.yaml + Dockerfile reference it from there), so this file lives at
+# the root too.
+
+# Local dev artifacts that should never be inside the image
+node_modules
+**/node_modules
+dist
+**/dist
+.next
+**/.next
+
+# Tests and coverage
+**/coverage
+**/*.test.ts
+**/*.test.tsx
+**/tests
+
+# Local DB and env files
+**/data
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/.env
+**/.env.local
+
+# Editor / VCS / OS
+.git
+.gitignore
+.github
+.vscode
+.idea
+.DS_Store
+
+# Docs (not needed at runtime)
+docs
+
+# The web app — API image doesn't need it
+apps/web

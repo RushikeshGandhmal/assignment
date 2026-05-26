@@ -1,0 +1,35 @@
+# Render Infrastructure-as-Code config.
+# When you connect this repo to Render and choose "Blueprint", Render reads
+# this file and provisions everything automatically (the API service, env
+# vars, region, plan).
+#
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: salary-management-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      # Ephemeral location for the SQLite file. The container's filesystem
+      # resets on cold starts; the Dockerfile re-runs migrate + seed on boot
+      # so each fresh container comes up with the same 10K-row dataset.
+      - key: DATABASE_FILE
+        value: ./data/salary-management.db
+      # Auto-generated 32-byte random hex string. Render generates this once
+      # when the service is first created; subsequent deploys keep the same
+      # value (so existing JWTs stay valid).
+      - key: JWT_SECRET
+        generateValue: true
+      # Set this to the Vercel URL after the UI is deployed.
+      # Comma-separated to allow multiple origins.
+      - key: CORS_ORIGIN
+        value: http://localhost:3000
