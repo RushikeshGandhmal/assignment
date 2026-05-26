@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import type { Employee } from '@salary-management/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,7 @@ export default function EmployeesPage() {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [data, setData] = useState<PaginatedEmployees | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export default function EmployeesPage() {
     return () => {
       cancelled = true;
     };
-  }, [page, debouncedSearch, filters.country, filters.status]);
+  }, [page, debouncedSearch, filters.country, filters.status, refreshKey]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -72,7 +74,21 @@ export default function EmployeesPage() {
   }, [debouncedSearch, filters.country, filters.status]);
 
   function refetch() {
-    setFilters((f) => ({ ...f }));
+    setRefreshKey((k) => k + 1);
+  }
+
+  function onEmployeeSaved(saved: Employee, mode: 'create' | 'edit') {
+    toast.success(
+      mode === 'create'
+        ? `Added ${saved.firstName} ${saved.lastName}.`
+        : `Updated ${saved.firstName} ${saved.lastName}.`,
+    );
+    refetch();
+  }
+
+  function onEmployeeDeleted(deleted: Employee) {
+    toast.success(`Deactivated ${deleted.firstName} ${deleted.lastName}.`);
+    refetch();
   }
 
   return (
@@ -224,7 +240,7 @@ export default function EmployeesPage() {
         mode="create"
         open={createOpen}
         onOpenChange={setCreateOpen}
-        onSaved={refetch}
+        onSaved={(saved) => onEmployeeSaved(saved, 'create')}
       />
       <EmployeeFormDialog
         mode="edit"
@@ -233,7 +249,7 @@ export default function EmployeesPage() {
           if (!open) setEditing(null);
         }}
         employee={editing ?? undefined}
-        onSaved={refetch}
+        onSaved={(saved) => onEmployeeSaved(saved, 'edit')}
       />
       <DeleteEmployeeDialog
         open={deleting !== null}
@@ -241,7 +257,7 @@ export default function EmployeesPage() {
           if (!open) setDeleting(null);
         }}
         employee={deleting}
-        onDeleted={refetch}
+        onDeleted={onEmployeeDeleted}
       />
     </div>
   );

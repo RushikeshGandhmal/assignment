@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ApiError } from '@/lib/api';
 import {
   getCountryInsights,
@@ -33,6 +33,17 @@ export default function DashboardPage() {
   const [drill, setDrill] = useState<CountryInsights | null>(null);
   const [drillLoading, setDrillLoading] = useState(false);
   const [drillError, setDrillError] = useState<string | null>(null);
+  const drillRef = useRef<HTMLElement | null>(null);
+
+  function selectCountry(next: string) {
+    setCountry(next);
+    // Smooth-scroll the drilldown into view so a "View" click on a country
+    // far down in the table doesn't look like nothing happened. Guarded for
+    // jsdom (which doesn't implement scrollIntoView) and SSR.
+    requestAnimationFrame(() => {
+      drillRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -139,7 +150,7 @@ export default function DashboardPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setCountry(row.country)}
+                          onClick={() => selectCountry(row.country)}
                           aria-label={`View insights for ${row.country}`}
                         >
                           View
@@ -152,12 +163,12 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section className="space-y-3">
+          <section ref={drillRef} className="scroll-mt-6 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg font-semibold tracking-tight">Country drilldown</h2>
               <select
                 value={country}
-                onChange={(e) => setCountry(e.target.value)}
+                onChange={(e) => selectCountry(e.target.value)}
                 className="rounded-md border bg-background px-2 py-1 text-sm"
                 aria-label="Country"
               >

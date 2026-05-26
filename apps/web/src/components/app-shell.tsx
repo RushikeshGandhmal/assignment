@@ -39,9 +39,7 @@ export function AppShell({ children }: AppShellProps) {
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
           <div className="flex items-center gap-6">
-            <Link href="/" className="text-base font-semibold tracking-tight">
-              Salary Management
-            </Link>
+            <span className="text-base font-semibold tracking-tight">Salary Management</span>
             <nav className="flex items-center gap-3 text-sm">
               {NAV_ITEMS.map((item) => {
                 const active =

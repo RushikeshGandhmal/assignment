@@ -17,7 +17,7 @@ export interface DeleteEmployeeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   employee: Employee | null;
-  onDeleted: () => void;
+  onDeleted: (employee: Employee) => void;
 }
 
 export function DeleteEmployeeDialog({
@@ -35,7 +35,7 @@ export function DeleteEmployeeDialog({
     setError(null);
     try {
       await deleteEmployee(employee.id);
-      onDeleted();
+      onDeleted(employee);
       onOpenChange(false);
     } catch {
       setError('Could not delete the employee. Please try again.');
