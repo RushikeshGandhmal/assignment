@@ -132,10 +132,7 @@ describe('POST /employees', () => {
 
   it('persists the employee row to the database', async () => {
     const { app: app2, db, cookie: cookie2 } = await buildApp();
-    const res = await request(app2)
-      .post('/employees')
-      .set('Cookie', cookie2)
-      .send(VALID_EMPLOYEE);
+    const res = await request(app2).post('/employees').set('Cookie', cookie2).send(VALID_EMPLOYEE);
     expect(res.status).toBe(201);
 
     const rows = db.select().from(employees).all();
