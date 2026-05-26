@@ -88,6 +88,23 @@ export class EmployeeService {
     return this.getEmployeeById(id);
   }
 
+  /**
+   * Soft deletes an employee by flipping status to INACTIVE. Returns true
+   * if the row existed (even if already INACTIVE), false if no row matched
+   * the id. Idempotent.
+   */
+  softDeleteEmployee(id: string): boolean {
+    const existing = this.getEmployeeById(id);
+    if (!existing) return false;
+
+    this.db
+      .update(employees)
+      .set({ status: 'INACTIVE', updatedAt: Math.floor(Date.now() / 1000) })
+      .where(eq(employees.id, id))
+      .run();
+    return true;
+  }
+
   listEmployees(query: ListEmployeesQuery): PaginatedEmployees {
     const { page, pageSize } = query;
     const where = buildListWhereClause(query);

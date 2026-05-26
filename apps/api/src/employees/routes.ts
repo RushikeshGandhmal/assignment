@@ -56,6 +56,15 @@ export function createEmployeesRouter(deps: { db: DbConnection; jwtSecret: strin
     }
   });
 
+  router.delete('/:id', (req, res) => {
+    const ok = service.softDeleteEmployee(req.params.id);
+    if (!ok) {
+      res.status(404).json({ error: 'not_found' });
+      return;
+    }
+    res.status(204).send();
+  });
+
   router.post('/', (req, res) => {
     const parsed = createEmployeeSchema.safeParse(req.body);
     if (!parsed.success) {
