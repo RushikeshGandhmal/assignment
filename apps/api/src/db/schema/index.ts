@@ -1,2 +1,2 @@
-// Drizzle schema barrel. Tables are added in subsequent steps (employees, users, currency_rates).
-export {};
+// Drizzle schema barrel.
+export * from './employees.js';
