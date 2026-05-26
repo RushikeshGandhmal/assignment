@@ -11,10 +11,13 @@ interface LoginResponse {
   user: { id: string; email: string };
 }
 
+const DEMO_EMAIL = 'hr@example.com';
+const DEMO_PASSWORD = 'changeme123';
+
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(DEMO_EMAIL);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -42,6 +45,17 @@ export default function LoginPage() {
         <div className="space-y-1 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
           <p className="text-sm text-muted-foreground">Salary Management for HR</p>
+        </div>
+        <div
+          role="note"
+          className="rounded-md border border-dashed bg-muted/40 p-3 text-xs text-muted-foreground"
+        >
+          <p className="font-medium text-foreground">Demo credentials pre-filled</p>
+          <p className="mt-1">
+            <span className="font-mono">{DEMO_EMAIL}</span> /{' '}
+            <span className="font-mono">{DEMO_PASSWORD}</span>
+          </p>
+          <p className="mt-1">Just click Sign in to continue.</p>
         </div>
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
           <div className="space-y-2">

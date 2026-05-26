@@ -56,7 +56,9 @@ describe('DashboardPage', () => {
 
     expect(await screen.findByText('250')).toBeInTheDocument();
     expect(screen.getByText('$12,500,000')).toBeInTheDocument();
-    expect(screen.getAllByText('US').length).toBeGreaterThan(0);
+    // Country codes are displayed using their full ISO display name.
+    expect(screen.getAllByText('United States').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('India').length).toBeGreaterThan(0);
     expect(screen.getByText('120')).toBeInTheDocument();
   });
 

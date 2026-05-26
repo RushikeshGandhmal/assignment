@@ -14,6 +14,7 @@ import {
 } from '@/lib/employees';
 import { EmployeeFormDialog } from '@/components/employees/employee-form-dialog';
 import { DeleteEmployeeDialog } from '@/components/employees/delete-employee-dialog';
+import { formatCountry } from '@/lib/countries';
 
 const PAGE_SIZE = 25;
 
@@ -190,7 +191,7 @@ export default function EmployeesPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{e.email}</td>
                   <td className="px-4 py-3">{e.jobTitle}</td>
-                  <td className="px-4 py-3">{e.country}</td>
+                  <td className="px-4 py-3">{formatCountry(e.country)}</td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {formatSalary(e.salary, e.currency)}
                   </td>

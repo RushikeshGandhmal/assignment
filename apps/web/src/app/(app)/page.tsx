@@ -8,6 +8,7 @@ import {
   type CountryInsights,
   type SummaryInsights,
 } from '@/lib/insights';
+import { formatCountry } from '@/lib/countries';
 
 const USD_FORMATTER = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -131,7 +132,7 @@ export default function DashboardPage() {
                 <tbody>
                   {summary.headcountByCountry.map((row) => (
                     <tr key={row.country} className="border-b last:border-0">
-                      <td className="px-4 py-2 font-medium">{row.country}</td>
+                      <td className="px-4 py-2 font-medium">{formatCountry(row.country)}</td>
                       <td className="px-4 py-2 text-right">{row.headcount.toLocaleString()}</td>
                     </tr>
                   ))}
@@ -151,7 +152,7 @@ export default function DashboardPage() {
               >
                 {countries.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {formatCountry(c)}
                   </option>
                 ))}
               </select>
@@ -167,7 +168,7 @@ export default function DashboardPage() {
               <>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <SummaryCard
-                    label={`Headcount (${drill.country})`}
+                    label={`Headcount (${formatCountry(drill.country)})`}
                     value={drill.headcount.toLocaleString()}
                   />
                   <SummaryCard label="Min salary" value={formatMinor(drill.salary.min)} />

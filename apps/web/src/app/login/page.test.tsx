@@ -25,11 +25,12 @@ afterEach(() => {
 });
 
 describe('LoginPage', () => {
-  it('renders email, password, and submit controls', () => {
+  it('renders email, password, and submit controls with the demo credentials pre-filled', () => {
     render(<LoginPage />);
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toHaveValue('hr@example.com');
+    expect(screen.getByLabelText(/password/i)).toHaveValue('changeme123');
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByText(/demo credentials pre-filled/i)).toBeInTheDocument();
   });
 
   it('submits credentials to /auth/login and redirects on success', async () => {
@@ -37,8 +38,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    await user.type(screen.getByLabelText(/email/i), 'hr@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'changeme123');
+    // Demo creds are pre-filled, so just click.
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
@@ -55,7 +55,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    await user.type(screen.getByLabelText(/email/i), 'hr@example.com');
+    await user.clear(screen.getByLabelText(/password/i));
     await user.type(screen.getByLabelText(/password/i), 'wrong');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
@@ -73,8 +73,6 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    await user.type(screen.getByLabelText(/email/i), 'hr@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'changeme123');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
     const button = screen.getByRole('button', { name: /signing in/i });
@@ -89,8 +87,6 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    await user.type(screen.getByLabelText(/email/i), 'hr@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'changeme123');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
