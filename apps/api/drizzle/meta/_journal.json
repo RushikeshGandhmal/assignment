@@ -15,6 +15,13 @@
       "when": 1779779267562,
       "tag": "0001_needy_randall",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1779779326264,
+      "tag": "0002_unique_vivisector",
+      "breakpoints": true
     }
   ]
 }
