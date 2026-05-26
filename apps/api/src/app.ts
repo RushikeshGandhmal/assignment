@@ -1,19 +1,25 @@
 import express, { type Express } from 'express';
-
+import cookieParser from 'cookie-parser';
+import type { DbConnection } from './db/client.js';
+import { createAuthRouter } from './auth/routes.js';
 import { healthRouter } from './routes/health.js';
 
-/**
- * Creates and configures the Express application.
- *
- * Separated from the server entry point so the app can be imported
- * directly in tests (via supertest) without binding to a port.
- */
-export function createApp(): Express {
+export interface AppDeps {
+  db: DbConnection;
+  jwtSecret: string;
+}
+
+// Builds the Express app from explicit dependencies. Tests pass in an
+// in-memory DB and a fixed secret; the server entry passes the configured
+// singleton db and env.JWT_SECRET.
+export function createApp(deps: AppDeps): Express {
   const app = express();
 
   app.use(express.json());
+  app.use(cookieParser());
 
   app.use('/health', healthRouter);
+  app.use('/auth', createAuthRouter(deps));
 
   return app;
 }
