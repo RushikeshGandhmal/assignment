@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ApiError } from '@/lib/api';
 import {
   getCountryInsights,
@@ -8,7 +8,6 @@ import {
   type CountryInsights,
   type SummaryInsights,
 } from '@/lib/insights';
-import { Button } from '@/components/ui/button';
 
 const USD_FORMATTER = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -33,17 +32,6 @@ export default function DashboardPage() {
   const [drill, setDrill] = useState<CountryInsights | null>(null);
   const [drillLoading, setDrillLoading] = useState(false);
   const [drillError, setDrillError] = useState<string | null>(null);
-  const drillRef = useRef<HTMLElement | null>(null);
-
-  function selectCountry(next: string) {
-    setCountry(next);
-    // Smooth-scroll the drilldown into view so a "View" click on a country
-    // far down in the table doesn't look like nothing happened. Guarded for
-    // jsdom (which doesn't implement scrollIntoView) and SSR.
-    requestAnimationFrame(() => {
-      drillRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-    });
-  }
 
   useEffect(() => {
     let cancelled = false;
@@ -138,7 +126,6 @@ export default function DashboardPage() {
                   <tr>
                     <th className="px-4 py-2 font-medium">Country</th>
                     <th className="px-4 py-2 font-medium text-right">Headcount</th>
-                    <th className="px-4 py-2" />
                   </tr>
                 </thead>
                 <tbody>
@@ -146,16 +133,6 @@ export default function DashboardPage() {
                     <tr key={row.country} className="border-b last:border-0">
                       <td className="px-4 py-2 font-medium">{row.country}</td>
                       <td className="px-4 py-2 text-right">{row.headcount.toLocaleString()}</td>
-                      <td className="px-4 py-2 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => selectCountry(row.country)}
-                          aria-label={`View insights for ${row.country}`}
-                        >
-                          View
-                        </Button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -163,12 +140,12 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section ref={drillRef} className="scroll-mt-6 space-y-3">
+          <section className="space-y-3">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg font-semibold tracking-tight">Country drilldown</h2>
               <select
                 value={country}
-                onChange={(e) => selectCountry(e.target.value)}
+                onChange={(e) => setCountry(e.target.value)}
                 className="rounded-md border bg-background px-2 py-1 text-sm"
                 aria-label="Country"
               >
