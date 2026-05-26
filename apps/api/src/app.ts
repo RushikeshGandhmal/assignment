@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import type { DbConnection } from './db/client.js';
 import { createAuthRouter } from './auth/routes.js';
 import { createEmployeesRouter } from './employees/routes.js';
+import { createInsightsRouter } from './insights/routes.js';
 import { healthRouter } from './routes/health.js';
 
 export interface AppDeps {
@@ -22,6 +23,7 @@ export function createApp(deps: AppDeps): Express {
   app.use('/health', healthRouter);
   app.use('/auth', createAuthRouter(deps));
   app.use('/employees', createEmployeesRouter(deps));
+  app.use('/insights', createInsightsRouter(deps));
 
   return app;
 }
