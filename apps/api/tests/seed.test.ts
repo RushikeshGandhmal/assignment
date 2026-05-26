@@ -9,8 +9,8 @@ describe('seed script', () => {
     const db = createTestDb();
     seed({ db, employeeCount: 100, randomSeed: 42 });
 
-    const [{ value }] = db.select({ value: count() }).from(employees).all();
-    expect(value).toBe(100);
+    const result = db.select({ value: count() }).from(employees).all();
+    expect(result[0]?.value).toBe(100);
   });
 
   it('is deterministic given the same random seed', () => {
@@ -73,10 +73,10 @@ describe('seed script', () => {
     seed({ db, employeeCount: 50, randomSeed: 42 });
     seed({ db, employeeCount: 50, randomSeed: 42 });
 
-    const [{ value: empCount }] = db.select({ value: count() }).from(employees).all();
-    const [{ value: userCount }] = db.select({ value: count() }).from(users).all();
-    expect(empCount).toBe(50);
-    expect(userCount).toBe(1);
+    const empRows = db.select({ value: count() }).from(employees).all();
+    const userRows = db.select({ value: count() }).from(users).all();
+    expect(empRows[0]?.value).toBe(50);
+    expect(userRows[0]?.value).toBe(1);
   });
 
   it('seeds 10,000 employees in under 5 seconds', () => {
@@ -85,8 +85,8 @@ describe('seed script', () => {
     seed({ db, employeeCount: 10_000, randomSeed: 42 });
     const elapsedMs = performance.now() - start;
 
-    const [{ value }] = db.select({ value: count() }).from(employees).all();
-    expect(value).toBe(10_000);
+    const result = db.select({ value: count() }).from(employees).all();
+    expect(result[0]?.value).toBe(10_000);
     expect(elapsedMs).toBeLessThan(5000);
   });
 });
