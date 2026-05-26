@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { and, asc, eq, like, or, sql, type SQL } from 'drizzle-orm';
-import type { CreateEmployeeInput, Employee, ListEmployeesQuery } from '@salary-management/shared';
+import type {
+  CreateEmployeeInput,
+  Employee,
+  ListEmployeesQuery,
+  UpdateEmployeeInput,
+} from '@salary-management/shared';
 import type { DbConnection } from '../db/client.js';
 import { employees } from '../db/schema/index.js';
 
@@ -58,6 +63,29 @@ export class EmployeeService {
   getEmployeeById(id: string): Employee | null {
     const row = this.db.select().from(employees).where(eq(employees.id, id)).get();
     return (row as Employee | undefined) ?? null;
+  }
+
+  /**
+   * Applies a partial update. Returns the updated row, or null when no
+   * employee with that id exists. Throws EmployeeEmailConflictError when
+   * the new email collides with another employee.
+   */
+  updateEmployee(id: string, input: UpdateEmployeeInput): Employee | null {
+    const existing = this.getEmployeeById(id);
+    if (!existing) return null;
+
+    const patch = { ...input, updatedAt: Math.floor(Date.now() / 1000) };
+
+    try {
+      this.db.update(employees).set(patch).where(eq(employees.id, id)).run();
+    } catch (err) {
+      if (isUniqueConstraintError(err) && input.email !== undefined) {
+        throw new EmployeeEmailConflictError(input.email);
+      }
+      throw err;
+    }
+
+    return this.getEmployeeById(id);
   }
 
   listEmployees(query: ListEmployeesQuery): PaginatedEmployees {

@@ -26,6 +26,18 @@ export const createEmployeeSchema = z.object({
 });
 export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
 
+/**
+ * Request body for PATCH /employees/:id. All fields optional, but at least
+ * one mutable field must be present. Immutable fields (id, status, createdAt,
+ * updatedAt) are not listed and are stripped by Zod's default behavior.
+ */
+export const updateEmployeeSchema = createEmployeeSchema
+  .partial()
+  .refine((obj) => Object.keys(obj).length > 0, {
+    message: 'at least one field must be provided',
+  });
+export type UpdateEmployeeInput = z.infer<typeof updateEmployeeSchema>;
+
 /** An employee row as returned by the API. */
 export const employeeSchema = createEmployeeSchema.extend({
   id: z.string(),
