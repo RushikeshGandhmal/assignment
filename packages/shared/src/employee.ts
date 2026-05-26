@@ -34,3 +34,14 @@ export const employeeSchema = createEmployeeSchema.extend({
   updatedAt: z.number().int(),
 });
 export type Employee = z.infer<typeof employeeSchema>;
+
+/** Query parameters for GET /employees. All optional. */
+export const listEmployeesQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(25),
+  search: z.string().trim().min(1).optional(),
+  country: countryCodeSchema.optional(),
+  jobTitle: z.string().trim().min(1).optional(),
+  status: employeeStatusSchema.optional(),
+});
+export type ListEmployeesQuery = z.infer<typeof listEmployeesQuerySchema>;

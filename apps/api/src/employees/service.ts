@@ -1,8 +1,16 @@
 import { randomUUID } from 'node:crypto';
-import { eq } from 'drizzle-orm';
-import type { CreateEmployeeInput, Employee } from '@salary-management/shared';
+import { and, asc, eq, like, or, sql, type SQL } from 'drizzle-orm';
+import type { CreateEmployeeInput, Employee, ListEmployeesQuery } from '@salary-management/shared';
 import type { DbConnection } from '../db/client.js';
 import { employees } from '../db/schema/index.js';
+
+export interface PaginatedEmployees {
+  items: Employee[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
 
 /** Thrown when an attempted insert/update would violate the unique email constraint. */
 export class EmployeeEmailConflictError extends Error {
@@ -46,4 +54,62 @@ export class EmployeeService {
     }
     return inserted as Employee;
   }
+
+  listEmployees(query: ListEmployeesQuery): PaginatedEmployees {
+    const { page, pageSize } = query;
+    const where = buildListWhereClause(query);
+
+    const totalRow = this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(employees)
+      .where(where)
+      .get();
+    const total = totalRow?.count ?? 0;
+
+    const items = this.db
+      .select()
+      .from(employees)
+      .where(where)
+      .orderBy(asc(employees.lastName), asc(employees.firstName))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize)
+      .all() as Employee[];
+
+    return {
+      items,
+      page,
+      pageSize,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
+    };
+  }
+}
+
+// Soft-deleted rows (INACTIVE) are hidden unless the caller explicitly asks
+// for them via the status filter. Search matches firstName, lastName, or
+// email case-insensitively via LOWER() comparison.
+function buildListWhereClause(query: ListEmployeesQuery): SQL | undefined {
+  const conditions: SQL[] = [];
+
+  conditions.push(eq(employees.status, query.status ?? 'ACTIVE'));
+
+  if (query.country) {
+    conditions.push(eq(employees.country, query.country));
+  }
+  if (query.jobTitle) {
+    conditions.push(eq(employees.jobTitle, query.jobTitle));
+  }
+  if (query.search) {
+    const needle = `%${query.search.toLowerCase()}%`;
+    const searchClause = or(
+      like(sql`lower(${employees.firstName})`, needle),
+      like(sql`lower(${employees.lastName})`, needle),
+      like(sql`lower(${employees.email})`, needle),
+    );
+    if (searchClause) {
+      conditions.push(searchClause);
+    }
+  }
+
+  return conditions.length === 1 ? conditions[0] : and(...conditions);
 }
