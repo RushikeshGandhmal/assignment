@@ -140,6 +140,33 @@ describe('EmployeesPage', () => {
     );
   });
 
+  it('hides edit and deactivate buttons on inactive rows', async () => {
+    const inactive = {
+      ...sampleEmployee,
+      id: 'emp-2',
+      status: 'INACTIVE' as 'ACTIVE' | 'INACTIVE',
+    };
+    listMock.mockResolvedValue(paginated([sampleEmployee, inactive] as (typeof sampleEmployee)[]));
+
+    render(<EmployeesPage />);
+    await waitFor(() => expect(screen.getAllByText('Alice Smith')).toHaveLength(2));
+
+    const rows = screen.getAllByRole('row');
+    // header + 2 data rows
+    expect(rows).toHaveLength(3);
+
+    const activeRow = rows[1]!;
+    const inactiveRow = rows[2]!;
+
+    expect(within(activeRow).getByRole('button', { name: /^edit$/i })).toBeInTheDocument();
+    expect(within(activeRow).getByRole('button', { name: /^deactivate$/i })).toBeInTheDocument();
+
+    expect(within(inactiveRow).queryByRole('button', { name: /^edit$/i })).not.toBeInTheDocument();
+    expect(
+      within(inactiveRow).queryByRole('button', { name: /^deactivate$/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it('opens a confirmation dialog and soft-deletes the row on confirm', async () => {
     listMock.mockResolvedValue(paginated([sampleEmployee]));
     deleteMock.mockResolvedValue(undefined);

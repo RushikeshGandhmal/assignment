@@ -196,14 +196,18 @@ export default function EmployeesPage() {
                     {formatSalary(e.salary, e.currency)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setEditing(e)}>
-                        Edit
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setDeleting(e)}>
-                        Deactivate
-                      </Button>
-                    </div>
+                    {e.status === 'ACTIVE' ? (
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setEditing(e)}>
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setDeleting(e)}>
+                          Deactivate
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">&mdash;</span>
+                    )}
                   </td>
                 </tr>
               ))}
